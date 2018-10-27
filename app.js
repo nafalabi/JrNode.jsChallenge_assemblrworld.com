@@ -66,6 +66,7 @@ app.post('/articles/create', function(req,res){
 
 app.get('/articles/read/:id', function(req,res){
 	var id = req.params.id;
+
 	Article.findById(id,function(err, article){
 		if (err){
 			var data = [{
@@ -97,6 +98,7 @@ app.patch('/articles/update/:id',function(req,res){
 			}];
 			res.send(data);
 		} else {
+			//assign update article data
 			article.title = req.header('title');
 			article.updatedAt = curDate();
 			article.body = req.header('body');
@@ -120,8 +122,32 @@ app.patch('/articles/update/:id',function(req,res){
 				}
 			});
 		}
-	})
+	});
 });
+
+
+app.delete('/articles/delete/:id',function(req,res){
+	var id = req.params.id;
+
+	Article.findByIdAndRemove(id,function(err,article){
+		if (err) {
+			var data = [{
+				"status" : 300,
+				"message" : "eror",
+				"result" : null
+			}];
+			res.send(data);
+		}else{
+			var data = [{
+				"status" : 200,
+				"message" : "OK",
+				"result" : article
+			}];
+			res.send(data);
+		}
+	});
+});
+
 
 app.listen(3000, function(){
 	console.log('server started on port 3000')
