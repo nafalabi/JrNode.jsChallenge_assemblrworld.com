@@ -54,8 +54,20 @@ app.post('/articles/create', function(req,res){
 			}];
 			res.send(data);
 		}
-	})
-})
+	});
+});
+
+app.get('/articles/read/:id', function(req,res){
+	var id = req.params.id;
+	Article.findById(id,function(err, article){
+		var data = [{
+			"status" : 200,
+			"message" : "OK",
+			"result" : article
+		}];
+		res.send(data);
+	});
+});
 
 app.listen(3000, function(){
 	console.log('server started on port 3000')
