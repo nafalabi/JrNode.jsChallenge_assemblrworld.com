@@ -1,3 +1,4 @@
+//INIT
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -34,6 +35,8 @@ app.get('/',  function (req, res){
 	});
 });
 
+
+//POST REQUEST HANDLER
 app.post('/articles/create', function(req,res){
 	var article = new Article();
 
@@ -64,9 +67,12 @@ app.post('/articles/create', function(req,res){
 	});
 });
 
+
+//GET REQUEST HANDLER
 app.get('/articles/read/:id', function(req,res){
 	var id = req.params.id;
 
+	//find an article by id
 	Article.findById(id,function(err, article){
 		if (err){
 			var data = [{
@@ -76,6 +82,7 @@ app.get('/articles/read/:id', function(req,res){
 			}];
 			res.send(data);
 		} else {
+			//init result and send it
 			var data = [{
 				"status" : 200,
 				"message" : "OK",
@@ -86,9 +93,12 @@ app.get('/articles/read/:id', function(req,res){
 	});
 });
 
+
+//PATCH REQUEST HANDLER
 app.patch('/articles/update/:id',function(req,res){
 	var id = req.params.id;
 
+	//find an article by id
 	Article.findById(id,function(err,article){
 		if (err){
 			var data = [{
@@ -104,6 +114,7 @@ app.patch('/articles/update/:id',function(req,res){
 			article.body = req.header('body');
 			article.archived = req.header('archived');
 
+			//Save changes
 			article.save(function(err){
 				if (err) {
 					var data = [{
@@ -126,9 +137,11 @@ app.patch('/articles/update/:id',function(req,res){
 });
 
 
+//DELETE REQUEST HANDLER
 app.delete('/articles/delete/:id',function(req,res){
 	var id = req.params.id;
 
+	//Find an article and delete it
 	Article.findByIdAndRemove(id,function(err,article){
 		if (err) {
 			var data = [{
