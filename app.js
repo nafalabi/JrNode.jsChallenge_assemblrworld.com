@@ -14,6 +14,15 @@ db.on('error', function(err){
 	console.log(err);
 })
 
+//Get current Date
+function curDate(){
+	var article = new Article();
+	var D = new Date(Date.now());
+	var curDate = D.getFullYear()+'-'+(D.getMonth()+1)+'-'+D.getDate();
+	return curDate;
+}
+
+
 app.get('/',  function (req, res){
 	Article.find({},function(err,articles){
 		var data = [{
@@ -27,13 +36,11 @@ app.get('/',  function (req, res){
 
 app.post('/articles/create', function(req,res){
 	var article = new Article();
-	var D = new Date(Date.now());
-	var curDate = D.getFullYear()+'-'+(D.getMonth()+1)+'-'+D.getDate();
-	
+
 	//assign new article data
 	article.title = req.header('title');
-	article.createdAt = curDate;
-	article.updatedAt = curDate;
+	article.createdAt = curDate();
+	article.updatedAt = curDate();
 	article.body = req.header('body');
 	article.archived = false;
 
@@ -60,13 +67,60 @@ app.post('/articles/create', function(req,res){
 app.get('/articles/read/:id', function(req,res){
 	var id = req.params.id;
 	Article.findById(id,function(err, article){
-		var data = [{
-			"status" : 200,
-			"message" : "OK",
-			"result" : article
-		}];
-		res.send(data);
+		if (err){
+			var data = [{
+				"status" : 300,
+				"message" : "error",
+				"result" : null
+			}];
+			res.send(data);
+		} else {
+			var data = [{
+				"status" : 200,
+				"message" : "OK",
+				"result" : article
+			}];
+			res.send(data);
+		}
 	});
+});
+
+app.patch('/articles/update/:id',function(req,res){
+	var id = req.params.id;
+
+	Article.findById(id,function(err,article){
+		if (err){
+			var data = [{
+				"status" : 300,
+				"message" : "error",
+				"result" : null
+			}];
+			res.send(data);
+		} else {
+			article.title = req.header('title');
+			article.updatedAt = curDate();
+			article.body = req.header('body');
+			article.archived = req.header('archived');
+
+			article.save(function(err){
+				if (err) {
+					var data = [{
+						"status" : 300,
+						"message" : "eror",
+						"result" : null
+					}];
+					res.send(data);
+				}else{
+					var data = [{
+						"status" : 200,
+						"message" : "OK",
+						"result" : article
+					}];
+					res.send(data);
+				}
+			});
+		}
+	})
 });
 
 app.listen(3000, function(){
